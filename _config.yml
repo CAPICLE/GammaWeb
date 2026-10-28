@@ -1,5 +1,5 @@
-url: "https://mkreyesh.github.io"
-baseurl: "/ScientificTable"
+url: "https://CAPICLE.github.io"
+baseurl: "/GammaWeb"
 
 markdown: kramdown
 kramdown:
