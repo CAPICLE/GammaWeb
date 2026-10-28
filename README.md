@@ -1,3 +1,3 @@
-# Scientific Table
+# CAPICLE Gamma LIV Webpage
 
-Github Pages template for a dynamic table page.
+Github Page webpage to share useful resources for LIV research in the photon sector.

@@ -1,5 +1,5 @@
 ---
-title: Scientific Table webpage
+title: CAPICLE Gamma LIV Webpage
 ---
 
-Welcome to the Scientific Table webpage
+Welcome to the CAPICLE Gamma LIV Webpage
