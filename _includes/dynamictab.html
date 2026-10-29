@@ -2,13 +2,13 @@
 <table id="datatable" class="display">
 	<thead>
 		<tr>
-			{% for pair in site.data.database[0] %}
+			{% for pair in site.data.bounds.database[0] %}
 				<th>{{ pair[0] }}</th>
 			{% endfor %}
 		</tr>
 	</thead>
 	<tbody>
-	{% for row in site.data.database %}
+	{% for row in site.data.bounds.database %}
 		<tr>
 			{% for pair in row %}
 				<td>{{ pair[1] }}</td>
