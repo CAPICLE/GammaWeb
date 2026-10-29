@@ -3,8 +3,7 @@ baseurl: "/GammaWeb"
 
 markdown: kramdown
 kramdown:
-  input: GFM
-  math_engine: mathjax
+  math_engine: nil
   math_engine_opts:
     enable_dollar_delimiter: true
 
