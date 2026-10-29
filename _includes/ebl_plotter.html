@@ -7,26 +7,32 @@
       <label for="redshift-slider" style="font-weight: bold; margin-right: 8px;">
         Redshift ($z$): <span id="redshift-val" style="color: #007bff; font-weight: bold;">0.00</span>
       </label>
-      <input type="range" id="redshift-slider" min="0" max="3.9" step="0.01" value="0" style="vertical-align: middle; width: 220px;">
+      <input type="range" id="redshift-slider" min="0" max="3.9" step="0.01" value="0" style="vertical-align: middle; width: 200px;">
     </div>
     
-    <div>
-      <span style="font-weight: bold; margin-right: 8px;">Models:</span>
-      <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="11dominguez" checked> Domínguez 2011</label>
-      <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="18franceschini" checked> Franceschini 2018</label>
-      <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="21saldana" checked> Saldaña 2021</label>
-      <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="22finke" checked> Finke 2022</label>
+    <div style="display: flex; flex-wrap: wrap; gap: 10px; align-items: center;">
+      <span style="font-weight: bold; margin-right: 4px;">Backgrounds:</span>
+      <label><input type="checkbox" id="cmb-check" checked> <b>CMB</b> (Blackbody)</label>
+      <label><input type="checkbox" class="model-check" value="11dominguez" checked> Domínguez 2011</label>
+      <label><input type="checkbox" class="model-check" value="18franceschini" checked> Franceschini 2018</label>
+      <label><input type="checkbox" class="model-check" value="21saldana" checked> Saldaña 2021</label>
+      <label><input type="checkbox" class="model-check" value="22finke" checked> Finke 2022</label>
     </div>
   </div>
 
-  <div id="ebl-plot-status" style="color: #6c757d; font-size: 0.9em; margin-bottom: 10px;">Loading EBL data...</div>
-  <div id="ebl-plot-container" style="width:100%; height:500px;"></div>
+  <div id="ebl-plot-status" style="color: #6c757d; font-size: 0.9em; margin-bottom: 10px;">Loading data...</div>
+  <div id="ebl-plot-container" style="width:100%; height:520px;"></div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
   const rawBaseUrl = "https://raw.githubusercontent.com/CAPICLE/GammaWeb/main/_data/ebl/";
   
+  // Physical constants for CMB calculation
+  const kB = 8.617333262e-5; // eV / K
+  const T0 = 2.7255;          // K
+  const kBT0 = kB * T0;       // eV (~2.3483e-4 eV)
+
   const modelFiles = {
     '11dominguez': { name: 'Domínguez et al. 2011', url: rawBaseUrl + '11dominguez.txt' },
     '18franceschini': { name: 'Franceschini et al. 2018', url: rawBaseUrl + '18franceschini.txt' },
@@ -38,6 +44,7 @@ document.addEventListener("DOMContentLoaded", function() {
   const statusEl = document.getElementById('ebl-plot-status');
   const slider = document.getElementById('redshift-slider');
   const valSpan = document.getElementById('redshift-val');
+  const cmbCheck = document.getElementById('cmb-check');
 
   function parseEBLFile(text) {
     const lines = text.trim().split('\n');
@@ -64,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function() {
     return { redshifts, energies, densities };
   }
 
-  // 1. Log-linear interpolation of density n(ω, z) at continuous target redshift z
   function interpolateLogDensity(redshifts, rowDensities, targetZ) {
     if (targetZ <= redshifts[0]) return rowDensities[0];
     if (targetZ >= redshifts[redshifts.length - 1]) return rowDensities[rowDensities.length - 1];
@@ -80,16 +86,23 @@ document.addEventListener("DOMContentLoaded", function() {
     const n2 = rowDensities[idx + 1];
 
     if (z1 === z2) return n1;
-
-    // Linear fallback if non-positive values exist
     if (n1 <= 0 || n2 <= 0) {
       const t = (targetZ - z1) / (z2 - z1);
       return n1 + t * (n2 - n1);
     }
 
-    // Log-linear interpolation in z: ln(n) = (1-t)ln(n1) + t*ln(n2)
     const t = (targetZ - z1) / (z2 - z1);
     return Math.exp((1 - t) * Math.log(n1) + t * Math.log(n2));
+  }
+
+  // Calculate analytical CMB density n_CMB(ω, z) * ω²
+  function calculateCMB(energies, targetZ) {
+    return energies.map(w => {
+      const x = w / (kBT0 * (1 + targetZ));
+      if (x > 700) return null; // Avoid exp overflow / non-positive log plotting issues
+      const nCMB = Math.pow(w / Math.PI, 2) / (Math.exp(x) - 1);
+      return nCMB * Math.pow(w, 2);
+    });
   }
 
   async function loadAllData() {
@@ -124,12 +137,32 @@ document.addEventListener("DOMContentLoaded", function() {
     
     const traces = [];
 
+    // Find reference energy grid from first available loaded model
+    let refEnergies = null;
+    const loadedKeys = Object.keys(cachedData);
+    if (loadedKeys.length > 0) {
+      refEnergies = cachedData[loadedKeys[0]].energies;
+    }
+
+    // 1. Plot Analytical CMB Spectrum if enabled
+    if (cmbCheck.checked && refEnergies) {
+      const cmbY = calculateCMB(refEnergies, selectedRedshift);
+      traces.push({
+        x: refEnergies,
+        y: cmbY,
+        mode: 'lines',
+        name: 'CMB (Planck Blackbody)',
+        line: { dash: 'dash', color: '#000000', width: 2 },
+        hovertemplate: 'E: %{x:.4e} eV<br>n·ω²: %{y:.4e} eV⁴<extra></extra>'
+      });
+    }
+
+    // 2. Plot Tabulated EBL Models
     checkboxes.forEach(cb => {
       const key = cb.value;
       const data = cachedData[key];
       if (!data) return;
 
-      // Compute n(ω, z) * ω² with log-interpolation at target z
       const yValues = data.densities.map((row, i) => {
         const energy = data.energies[i];
         const interpolatedN = interpolateLogDensity(data.redshifts, row, selectedRedshift);
@@ -146,7 +179,7 @@ document.addEventListener("DOMContentLoaded", function() {
     });
 
     const layout = {
-      title: `EBL Energy Density Spectrum n(ω,z)·ω² at z = ${selectedRedshift.toFixed(2)}`,
+      title: `Photon Energy Density Spectrum n(ω,z)·ω² at z = ${selectedRedshift.toFixed(2)}`,
       xaxis: { title: 'Photon Energy ω [eV]', type: 'log' },
       yaxis: { title: 'n(ω, z) · ω² [eV⁴]', type: 'log' },
       margin: { l: 65, r: 30, t: 40, b: 50 },
@@ -156,13 +189,14 @@ document.addEventListener("DOMContentLoaded", function() {
     Plotly.react('ebl-plot-container', traces, layout);
   }
 
-  // 2. Real-time number update while dragging
+  // Real-time slider number display update
   slider.addEventListener('input', function(e) {
     valSpan.textContent = parseFloat(e.target.value).toFixed(2);
   });
 
-  // 3. Re-render Plotly graph ONLY when user releases the slider handle
+  // Re-render Plotly graph only when releasing handle or toggling boxes
   slider.addEventListener('change', updatePlot);
+  cmbCheck.addEventListener('change', updatePlot);
   document.querySelectorAll('.model-check').forEach(cb => cb.addEventListener('change', updatePlot));
 
   loadAllData();
