@@ -4,14 +4,14 @@ title: Low-energy photon backgrounds
 
 ## Gamma-Ray Absorption
 
-Very High Energy (VHE) and Ultra-High Energy (UHE) gamma rays traveling across cosmological distances interact with low-energy diffuse background photons via electron-positron pair production ($\gamma\gamma \to e^+e^-$)[cite: 2, 3]. The total optical depth $\tau(E_0, z_s)$ for an observed gamma ray of energy $E_0$ originating from a source at redshift $z_s$ is given by[cite: 3, 15]:
+Very High Energy (VHE) and Ultra-High Energy (UHE) gamma rays traveling across cosmological distances interact with low-energy diffuse background photons via electron-positron pair production ($\gamma\gamma \to e^+e^-$). The total optical depth $\tau(E_0, z_s)$ for an observed gamma ray of energy $E_0$ originating from a source at redshift $z_s$ is given by:
 
 $$\tau(E_0, z_s) = \int_{0}^{z_s} dz \, \frac{1}{(1+z)H(z)} \int_{-1}^{1} d\cos\theta \, \frac{1-\cos\theta}{2} \int_{\omega_{\text{th}}}^{\infty} d\omega \, n(\omega,z) \, \sigma(s)$$
 
 where:
-* $n(\omega,z) = \frac{dN(z)}{dV \, d\omega}$ is the proper background photon number density per physical volume $V$ and physical photon energy $\omega$[cite: 4, 15].
-* $\sigma(s)$ is the total Breit–Wheeler cross-section for pair production as a function of center-of-mass energy squared $s$[cite: 2, 15].
-* $\omega_{\text{th}}$ is the threshold physical energy required for target background photons to undergo pair production[cite: 2, 3, 15].
+* $n(\omega,z) = \frac{dN(z)}{dV \, d\omega}$ is the proper background photon number density per physical volume $V$ and physical photon energy $\omega$.
+* $\sigma(s)$ is the total Breit–Wheeler cross-section for pair production as a function of center-of-mass energy squared $s$.
+* $\omega_{\text{th}}$ is the threshold physical energy required for target background photons to undergo pair production.
 
 This formalism applies to any diffuse target field along the line of sight, such as the Cosmic Microwave Background (CMB) or the Extragalactic Background Light (EBL).
 
@@ -21,13 +21,13 @@ The Cosmic Microwave Background (CMB) is the remnant thermal blackbody radiation
 
 ## The Extragalactic Background Light (EBL)
 
-The Extragalactic Background Light (EBL) is the cumulative diffuse background radiation produced by direct starlight and dust re-emission across cosmic history ($0.1\text{ }\mu\text{m} - 1000\text{ }\mu\text{m}$). The EBL serves as the primary target photon field $n(\omega, z)$ for attenuation of Very High Energy gamma rays ($10\text{ GeV} \lesssim E \lesssim 100\text{ TeV}$)[cite: 2, 3].
+The Extragalactic Background Light (EBL) is the cumulative diffuse background radiation produced by direct starlight and dust re-emission across cosmic history ($0.1\text{ }\mu\text{m} - 1000\text{ }\mu\text{m}$). The EBL serves as the primary target photon field $n(\omega, z)$ for attenuation of Very High Energy gamma rays ($10\text{ GeV} \lesssim E \lesssim 100\text{ TeV}$).
 
 ### The standardization problem
 
-Calculating gamma-ray optical depths requires evaluating $n(\omega, z)$ from tabulated EBL models[cite: 4, 5]. However, published EBL tables use differing conventions regarding reference frames (physical volume $V(z)$ vs. comoving volume $V_0$) and photon energy variables (physical local energy $\omega(z)$ vs. laboratory energy $\omega_0$)[cite: 4, 5]. Misinterpreting these definitions leads to noticeable discrepancies in computed optical depths $\tau(E_0, z)$[cite: 4, 11].
+Calculating gamma-ray optical depths requires evaluating $n(\omega, z)$ from tabulated EBL models. However, published EBL tables use differing conventions regarding reference frames (physical volume $V(z)$ vs. comoving volume $V_0$) and photon energy variables (physical local energy $\omega(z)$ vs. laboratory energy $\omega_0$). Misinterpreting these definitions leads to noticeable discrepancies in computed optical depths $\tau(E_0, z)$.
 
-The four primary density conventions encountered in literature are[cite: 4]:
+The four primary density conventions encountered in literature are:
 
 1. **Physical density in terms of physical energy:**
 
@@ -47,24 +47,24 @@ The four primary density conventions encountered in literature are[cite: 4]:
 
 ### Dominguez et al. 2011
 
-An empirical EBL model based on multi-wavelength galaxy survey data and luminosity functions. Re-calculating optical depths under the assumption that the table provides comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, reproduces reference curves with discrepancies under $2\%$[cite: 6].
+An empirical EBL model based on multi-wavelength galaxy survey data and luminosity functions. Re-calculating optical depths under the assumption that the table provides comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, reproduces reference curves with discrepancies under $2\%$.
 
-* EBL Data File: [`/_data/ebl/11dominguez.txt`](/_data/ebl/11dominguez.txt)
+* EBL Data File: [`11dominguez.txt`](/GammaWeb/_data/ebl/11dominguez.txt)
 
 ### Franceschini et al. 2018
 
-An updated evolutionary model based on optical and infrared galaxy counts. The authors explicitly define their tables using physical photon density per physical energy, $n(\omega(z), z) = \frac{dN(z)}{dV(z) \, d\omega(z)}$, matching published reference values within $3\%$[cite: 7].
+An updated evolutionary model based on optical and infrared galaxy counts. The authors explicitly define their tables using physical photon density per physical energy, $n(\omega(z), z) = \frac{dN(z)}{dV(z) \, d\omega(z)}$, matching published reference values within $3\%$.
 
-* EBL Data File: [`/_data/ebl/18franceschini.txt`](/_data/ebl/18franceschini.txt)
+* EBL Data File: [`18franceschini.txt`](/GammaWeb/_data/ebl/18franceschini.txt)
 
 ### Saldana et al. 2021
 
-An EBL model derived using deep survey galaxy light density measurements. Assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, produces agreement with published reference curves within $0.5\%$[cite: 8].
+An EBL model derived using deep survey galaxy light density measurements. Assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, produces agreement with published reference curves within $0.5\%$.
 
-* EBL Data File: [`/_data/ebl/21saldana.txt`](/_data/ebl/21saldana.txt)
+* EBL Data File: [`21saldana.txt`](/GammaWeb/_data/ebl/21saldana.txt)
 
 ### Finke et al. 2022
 
-A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across density interpretations reveals discrepancies under all assumptions, with the smallest discrepancy ($\sim 10\%$) occurring when assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$[cite: 9, 11].
+A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across density interpretations reveals discrepancies under all assumptions, with the smallest discrepancy ($\sim 10\%$) occurring when assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$.
 
-* EBL Data File: [`/_data/ebl/22finke.txt`](/_data/ebl/22finke.txt)
+* EBL Data File: [`22finke.txt`](/GammaWeb/_data/ebl/22finke.txt)
