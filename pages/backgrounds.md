@@ -17,7 +17,7 @@ $$\frac{1}{\lambda(E,z)} = \frac{m_e^2}{4E^2} \int_{1}^{\infty} d\bar{s} \, \mat
 where:
 
 * $\omega_{\text{th}} = \frac{\bar{s}m_e^2}{E}$ is the threshold physical energy required for target background photons to undergo pair production.
-* $\mathcal{F}_{\text{BW}}(\bar{s}) = 8\bar{s}m_e^2 \, \sigma_{\text{BW}}(4m_e^2\bar{s})$ incorporates the Breit–Wheeler pair-production cross-section $\sigma_{\text{BW}}$.
+* $\mathcal{F}\_{\text{BW}}(\bar{s}) = 8\bar{s}m_e^2 \, \sigma\_{\text{BW}}(4m_e^2\bar{s})$ incorporates the Breit–Wheeler pair-production cross-section $\sigma\_{\text{BW}}$.
 * $n(\omega,z)$ is the proper photon number density per physical photon energy.
 
 Integrating the interaction rate along the line of sight yields the total optical depth $\tau(E_0, z_s)$ for a gamma ray observed in the laboratory frame with energy $E_0$ originating from a source at redshift $z_s$:
