@@ -68,3 +68,5 @@ An EBL model derived using deep survey galaxy light density measurements. Assumi
 A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across density interpretations reveals discrepancies under all assumptions, with the smallest discrepancy ($\sim 10\%$) occurring when assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$.
 
 * EBL Data File: [`22finke.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/22finke.txt)
+
+{% include ebl_plotter.html %}

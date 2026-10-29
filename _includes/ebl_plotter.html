@@ -1,17 +1,17 @@
-<!-- Load Plotly.js CDN -->
+<!-- Load Plotly.js -->
 <script src="https://cdn.plot.ly/plotly-2.27.0.min.js"></script>
 
 <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px; margin: 20px 0;">
   <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 15px;">
     <div>
-      <label for="redshift-select" style="font-weight: bold; margin-right: 8px;">Select Redshift ($z$):</label>
+      <label for="redshift-select" style="font-weight: bold; margin-right: 8px;">Redshift ($z$):</label>
       <select id="redshift-select" style="padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc;">
-        <!-- Dynamically populated from file headers -->
+        <option>Loading redshifts...</option>
       </select>
     </div>
     
     <div>
-      <span style="font-weight: bold; margin-right: 8px;">Select Models:</span>
+      <span style="font-weight: bold; margin-right: 8px;">Models:</span>
       <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="11dominguez" checked> Domínguez 2011</label>
       <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="18franceschini" checked> Franceschini 2018</label>
       <label style="margin-right: 10px;"><input type="checkbox" class="model-check" value="21saldana" checked> Saldaña 2021</label>
@@ -19,22 +19,26 @@
     </div>
   </div>
 
+  <div id="ebl-plot-status" style="color: #6c757d; font-size: 0.9em; margin-bottom: 10px;">Loading EBL data...</div>
   <div id="ebl-plot-container" style="width:100%; height:500px;"></div>
 </div>
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
+  // Uses Jekyll's baseurl to correctly resolve /GammaWeb/_data/ebl/
+  const baseUrl = "{{ site.baseurl }}";
+  
   const modelFiles = {
-    '11dominguez': { name: 'Domínguez et al. 2011', url: '/_data/ebl/11dominguez.txt' },
-    '18franceschini': { name: 'Franceschini et al. 2018', url: '/_data/ebl/18franceschini.txt' },
-    '21saldana': { name: 'Saldaña et al. 2021', url: '/_data/ebl/21saldana.txt' },
-    '22finke': { name: 'Finke et al. 2022', url: '/_data/ebl/22finke.txt' }
+    '11dominguez': { name: 'Domínguez et al. 2011', url: baseUrl + '/_data/ebl/11dominguez.txt' },
+    '18franceschini': { name: 'Franceschini et al. 2018', url: baseUrl + '/_data/ebl/18franceschini.txt' },
+    '21saldana': { name: 'Saldaña et al. 2021', url: baseUrl + '/_data/ebl/21saldana.txt' },
+    '22finke': { name: 'Finke et al. 2022', url: baseUrl + '/_data/ebl/22finke.txt' }
   };
 
   const cachedData = {};
   let commonRedshifts = [];
+  const statusEl = document.getElementById('ebl-plot-status');
 
-  // Parse text file into Energy array, Redshifts array, and 2D Density matrix
   function parseEBLFile(text) {
     const lines = text.trim().split('\n');
     let redshifts = [];
@@ -51,34 +55,43 @@ document.addEventListener("DOMContentLoaded", function() {
         }
       } else if (line.length > 0) {
         const cols = line.split(/\s+/).map(Number);
-        if (cols.length > 1) rows.push(cols);
+        if (cols.length > 1 && !isNaN(cols[0])) rows.push(cols);
       }
     }
 
     const energies = rows.map(r => r[0]);
-    // Matrix: rows are energies, columns are density values for each redshift
     const densities = rows.map(r => r.slice(1));
-
     return { redshifts, energies, densities };
   }
 
-  // Load all enabled EBL data files
   async function loadAllData() {
+    let loadedCount = 0;
+    
     for (const key of Object.keys(modelFiles)) {
       try {
         const response = await fetch(modelFiles[key].url);
         if (response.ok) {
           const text = await response.text();
           cachedData[key] = parseEBLFile(text);
+          loadedCount++;
           if (commonRedshifts.length === 0 && cachedData[key].redshifts.length > 0) {
             commonRedshifts = cachedData[key].redshifts;
           }
+        } else {
+          console.error(`Failed to fetch ${modelFiles[key].url}: Status ${response.status}`);
         }
       } catch (err) {
-        console.warn(`Could not load EBL file for ${key}:`, err);
+        console.error(`Error loading ${key}:`, err);
       }
     }
 
+    if (loadedCount === 0) {
+      statusEl.style.color = '#dc3545';
+      statusEl.textContent = 'Could not load data files. Ensure _config.yml contains: include: ["_data/ebl"]';
+      return;
+    }
+
+    statusEl.textContent = '';
     populateRedshiftDropdown();
     updatePlot();
   }
@@ -106,7 +119,6 @@ document.addEventListener("DOMContentLoaded", function() {
       const data = cachedData[key];
       if (!data) return;
 
-      // Find closest matching redshift index in case grids differ slightly
       const zIdx = data.redshifts.indexOf(selectedRedshift) !== -1
         ? data.redshifts.indexOf(selectedRedshift)
         : zIndex;
@@ -124,8 +136,8 @@ document.addEventListener("DOMContentLoaded", function() {
 
     const layout = {
       title: `EBL Photon Density Spectrum at z = ${selectedRedshift}`,
-      xaxis: { title: 'Photon Energy ω [eV]', type: 'log', autocorrect: 'on' },
-      yaxis: { title: 'Number Density n(ω, z) [eV²]', type: 'log', autocorrect: 'on' },
+      xaxis: { title: 'Photon Energy ω [eV]', type: 'log' },
+      yaxis: { title: 'Number Density n(ω, z) [eV²]', type: 'log' },
       margin: { l: 65, r: 30, t: 40, b: 50 },
       hovermode: 'x unified'
     };
@@ -133,7 +145,6 @@ document.addEventListener("DOMContentLoaded", function() {
     Plotly.react('ebl-plot-container', traces, layout);
   }
 
-  // Event Listeners
   document.getElementById('redshift-select').addEventListener('change', updatePlot);
   document.querySelectorAll('.model-check').forEach(cb => cb.addEventListener('change', updatePlot));
 
