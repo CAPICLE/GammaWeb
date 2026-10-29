@@ -49,22 +49,22 @@ The four primary density conventions encountered in literature are:
 
 An empirical EBL model based on multi-wavelength galaxy survey data and luminosity functions. Re-calculating optical depths under the assumption that the table provides comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, reproduces reference curves with discrepancies under $2\%$.
 
-* EBL Data File: [`11dominguez.txt`](/GammaWeb/_data/ebl/11dominguez.txt)
+* EBL Data File: [`11dominguez.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/11dominguez.txt)
 
 ### Franceschini et al. 2018
 
 An updated evolutionary model based on optical and infrared galaxy counts. The authors explicitly define their tables using physical photon density per physical energy, $n(\omega(z), z) = \frac{dN(z)}{dV(z) \, d\omega(z)}$, matching published reference values within $3\%$.
 
-* EBL Data File: [`18franceschini.txt`](/GammaWeb/_data/ebl/18franceschini.txt)
+* EBL Data File: [`18franceschini.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/18franceschini.txt)
 
 ### Saldana et al. 2021
 
 An EBL model derived using deep survey galaxy light density measurements. Assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, produces agreement with published reference curves within $0.5\%$.
 
-* EBL Data File: [`21saldana.txt`](/GammaWeb/_data/ebl/21saldana.txt)
+* EBL Data File: [`21saldana.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/21saldana.txt)
 
 ### Finke et al. 2022
 
 A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across density interpretations reveals discrepancies under all assumptions, with the smallest discrepancy ($\sim 10\%$) occurring when assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$.
 
-* EBL Data File: [`22finke.txt`](/GammaWeb/_data/ebl/22finke.txt)
+* EBL Data File: [`22finke.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/22finke.txt)
