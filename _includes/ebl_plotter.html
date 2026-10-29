@@ -25,14 +25,14 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Uses Jekyll's baseurl to correctly resolve /GammaWeb/_data/ebl/
-  const baseUrl = "{{ site.baseurl }}";
+  // Direct fetch from raw GitHub repository storage
+  const rawBaseUrl = "https://raw.githubusercontent.com/CAPICLE/GammaWeb/main/_data/ebl/";
   
   const modelFiles = {
-    '11dominguez': { name: 'Domínguez et al. 2011', url: baseUrl + '/_data/ebl/11dominguez.txt' },
-    '18franceschini': { name: 'Franceschini et al. 2018', url: baseUrl + '/_data/ebl/18franceschini.txt' },
-    '21saldana': { name: 'Saldaña et al. 2021', url: baseUrl + '/_data/ebl/21saldana.txt' },
-    '22finke': { name: 'Finke et al. 2022', url: baseUrl + '/_data/ebl/22finke.txt' }
+    '11dominguez': { name: 'Domínguez et al. 2011', url: rawBaseUrl + '11dominguez.txt' },
+    '18franceschini': { name: 'Franceschini et al. 2018', url: rawBaseUrl + '18franceschini.txt' },
+    '21saldana': { name: 'Saldaña et al. 2021', url: rawBaseUrl + '21saldana.txt' },
+    '22finke': { name: 'Finke et al. 2022', url: rawBaseUrl + '22finke.txt' }
   };
 
   const cachedData = {};
@@ -87,7 +87,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
     if (loadedCount === 0) {
       statusEl.style.color = '#dc3545';
-      statusEl.textContent = 'Could not load data files. Ensure _config.yml contains: include: ["_data/ebl"]';
+      statusEl.textContent = 'Could not fetch data from GitHub raw repository storage.';
       return;
     }
 

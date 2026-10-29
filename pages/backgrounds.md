@@ -69,4 +69,6 @@ A theoretical cosmological model based on stellar evolution models and dust re-r
 
 * EBL Data File: [`22finke.txt`](https://raw.githubusercontent.com/CAPICLE/GammaWeb/refs/heads/main/_data/ebl/22finke.txt)
 
+### EBL models comparison
+
 {% include ebl_plotter.html %}
