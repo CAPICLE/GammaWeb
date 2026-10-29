@@ -15,19 +15,19 @@ Transforming variables to $\bar{s} = \frac{s}{4m_e^2}$, the inverse mean free pa
 $$\frac{1}{\lambda(E,z)} = \frac{m_e^2}{4E^2} \int_{1}^{\infty} d\bar{s} \, \mathcal{F}_{\text{BW}}(\bar{s}) \int_{\omega_{\text{th}}}^{\infty} d\omega \, \frac{n(\omega,z)}{\omega^2}$$
 
 where:
-* $\omega_{\text{th}} = \frac{\bar{s}m_e^2}{E}$ is the threshold physical energy required for target background photons to undergo pair production.
-* $\mathcal{F}_{\text{BW}}(\bar{s}) = 8\bar{s}m_e^2 \, \sigma_{\text{BW}}(4m_e^2\bar{s})$ incorporates the Breit–Wheeler pair-production cross-section $\sigma_{\text{BW}}$.
+* $\omega\_{\text{th}} = \frac{\bar{s}m_e^2}{E}$ is the threshold physical energy required for target background photons to undergo pair production.
+* $\mathcal{F}\_{\text{BW}}(\bar{s}) = 8\bar{s}m_e^2 \, \sigma\_{\text{BW}}(4m_e^2\bar{s})$ incorporates the Breit–Wheeler pair-production cross-section $\sigma\_{\text{BW}}$.
 * $n(\omega,z)$ is the proper photon number density per physical photon energy.
 
-Integrating the interaction rate along the line of sight yields the total optical depth $\tau(E_0, z_s)$ for a gamma ray observed in the laboratory frame with energy $E_0$ originating from a source at redshift $z_s$:
+Integrating the interaction rate along the line of sight yields the total optical depth $\tau(E\_0, z\_s)$ for a gamma ray observed in the laboratory frame with energy $E\_0$ originating from a source at redshift $z\_s$:
 
 $$\tau(E_0, z_s) = \int_{0}^{z_s} dz \, \frac{1}{(1+z)H(z)} \, \frac{1}{\lambda(E(z),z)}$$
 
-Relating physical energy $E(z)$ to observed energy $E_0$ via $E(z) = E_0(1+z)$, the optical depth becomes:
+Relating physical energy $E(z)$ to observed energy $E\_0$ via $E(z) = E\_0(1+z)$, the optical depth becomes:
 
 $$\tau(E_0, z_s) = \frac{m_e^2}{4E_0^2} \int_{0}^{z_s} dz \, \frac{1}{(1+z)^3 H(z)} \int_{1}^{\infty} d\bar{s} \, \mathcal{F}_{\text{BW}}(\bar{s}) \int_{\omega_{\text{th}}}^{\infty} d\omega \, \frac{n(\omega,z)}{\omega^2}$$
 
-where the redshift-dependent threshold energy is $\omega_{\text{th}} = \frac{\bar{s}m_e^2}{E_0 (1+z)}$.
+where the redshift-dependent threshold energy is $\omega\_{\text{th}} = \frac{\bar{s}m_e^2}{E\_0 (1+z)}$.
 
 In these formulas, $n(\omega, z)$ denotes the target photon density of any background field encountered along the line of sight, such as the Cosmic Microwave Background (CMB) or the Extragalactic Background Light (EBL).
 
@@ -41,7 +41,7 @@ The Extragalactic Background Light (EBL) is the cumulative diffuse background ra
 
 ### The standardization problem
 
-Calculating gamma-ray optical depths requires evaluating $n(\omega, z)$ from tabulated EBL models. However, different published tables use differing definitions regarding reference frames (physical volume $V(z)$ vs. comoving volume $V_0$) and photon energy variables (physical local energy $\omega(z)$ vs. laboratory/observed energy $\omega_0$). Misinterpreting the tabulated density quantity can lead to significant discrepancies in the calculated gamma-ray optical depth $\tau(E_0, z)$.
+Calculating gamma-ray optical depths requires evaluating $n(\omega, z)$ from tabulated EBL models. However, different published tables use differing definitions regarding reference frames (physical volume $V(z)$ vs. comoving volume $V\_0$) and photon energy variables (physical local energy $\omega(z)$ vs. laboratory/observed energy $\omega\_0$). Misinterpreting the tabulated density quantity can lead to significant discrepancies in the calculated gamma-ray optical depth $\tau(E\_0, z)$.
 
 The four primary conventions encountered in literature are:
 
@@ -55,11 +55,11 @@ The four primary conventions encountered in literature are:
    $$n_0(\omega_0, z) = \frac{dN(z)}{dV_0 \, d\omega_0} = \frac{n(\omega(z), z)}{(1+z)^2}$$
 
 4. **Physical density in terms of laboratory energy:**
-   $$n(\omega_0, z) = \frac{dN(z)}{dV(z) \, d\omega_0} = \frac{n(\omega(z), z)}{1+z}$$
+   $$n(\omega_0, z) = \frac{dN(z)}{dV(z) \, d\omega_0} = \frac{n(\omega_0, z)}{1+z}$$
 
 ### Dominguez et al. 2011
 
-An empirical EBL model based on multi-wavelength galaxy survey data and luminosity functions. Re-calculating optical depths under the assumption that the table provides comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, reproduces the authors' published reference curves with discrepancies under $2\%$.
+An empirical EBL model based on multi-wavelength galaxy survey data and luminosity functions. Re-calculating optical depths under the assumption that the table provides comoving density per physical energy, $n\_0(\omega(z), z) = \frac{dN(z)}{dV\_0 \, d\omega(z)}$, reproduces the authors' published reference curves with discrepancies under $2\%$.
 
 ### Franceschini et al. 2018
 
@@ -67,8 +67,8 @@ An updated evolutionary model based on optical and infrared galaxy counts. The a
 
 ### Saldana et al. 2021
 
-An EBL model derived using deep survey galaxy light density measurements up to high redshifts. Assuming the tabulated values represent comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, produces agreement with published reference curves to within $0.5\%$.
+An EBL model derived using deep survey galaxy light density measurements up to high redshifts. Assuming the tabulated values represent comoving density per physical energy, $n\_0(\omega(z), z) = \frac{dN(z)}{dV\_0 \, d\omega(z)}$, produces agreement with published reference curves to within $0.5\%$.
 
 ## Finke et al. 2022
 
-A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across different density interpretations reveals persistent discrepancies under all assumptions. Assuming comoving density per physical energy, $n_0(\omega(z), z) = \frac{dN(z)}{dV_0 \, d\omega(z)}$, gives the smallest discrepancy at $z = 0.1$ ($\sim 10\%$), but using an incorrect assumption at higher redshifts ($z = 1.0$) leads to order-of-magnitude errors in calculated optical depth.
+A theoretical cosmological model based on stellar evolution models and dust re-radiation. Testing this model's tables across different density interpretations reveals persistent discrepancies under all assumptions. Assuming comoving density per physical energy, $n\_0(\omega(z), z) = \frac{dN(z)}{dV\_0 \, d\omega(z)}$, gives the smallest discrepancy at $z = 0.1$ ($\sim 10\%$), but using an incorrect assumption at higher redshifts ($z = 1.0$) leads to order-of-magnitude errors in calculated optical depth.
