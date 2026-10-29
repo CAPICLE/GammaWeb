@@ -4,10 +4,10 @@
 <div style="background: #f8f9fa; border: 1px solid #e9ecef; border-radius: 8px; padding: 16px; margin: 20px 0;">
   <div style="display: flex; flex-wrap: wrap; gap: 20px; align-items: center; margin-bottom: 15px;">
     <div>
-      <label for="redshift-select" style="font-weight: bold; margin-right: 8px;">Redshift ($z$):</label>
-      <select id="redshift-select" style="padding: 5px 10px; border-radius: 4px; border: 1px solid #ccc;">
-        <option>Loading redshifts...</option>
-      </select>
+      <label for="redshift-slider" style="font-weight: bold; margin-right: 8px;">
+        Redshift ($z$): <span id="redshift-val" style="color: #007bff; font-weight: bold;">0.00</span>
+      </label>
+      <input type="range" id="redshift-slider" min="0" max="3.9" step="0.01" value="0" style="vertical-align: middle; width: 220px;">
     </div>
     
     <div>
@@ -25,7 +25,6 @@
 
 <script>
 document.addEventListener("DOMContentLoaded", function() {
-  // Direct fetch from raw GitHub repository storage
   const rawBaseUrl = "https://raw.githubusercontent.com/CAPICLE/GammaWeb/main/_data/ebl/";
   
   const modelFiles = {
@@ -36,8 +35,9 @@ document.addEventListener("DOMContentLoaded", function() {
   };
 
   const cachedData = {};
-  let commonRedshifts = [];
   const statusEl = document.getElementById('ebl-plot-status');
+  const slider = document.getElementById('redshift-slider');
+  const valSpan = document.getElementById('redshift-val');
 
   function parseEBLFile(text) {
     const lines = text.trim().split('\n');
@@ -64,6 +64,34 @@ document.addEventListener("DOMContentLoaded", function() {
     return { redshifts, energies, densities };
   }
 
+  // 1. Log-linear interpolation of density n(ω, z) at continuous target redshift z
+  function interpolateLogDensity(redshifts, rowDensities, targetZ) {
+    if (targetZ <= redshifts[0]) return rowDensities[0];
+    if (targetZ >= redshifts[redshifts.length - 1]) return rowDensities[rowDensities.length - 1];
+
+    let idx = 0;
+    while (idx < redshifts.length - 1 && redshifts[idx + 1] < targetZ) {
+      idx++;
+    }
+
+    const z1 = redshifts[idx];
+    const z2 = redshifts[idx + 1];
+    const n1 = rowDensities[idx];
+    const n2 = rowDensities[idx + 1];
+
+    if (z1 === z2) return n1;
+
+    // Linear fallback if non-positive values exist
+    if (n1 <= 0 || n2 <= 0) {
+      const t = (targetZ - z1) / (z2 - z1);
+      return n1 + t * (n2 - n1);
+    }
+
+    // Log-linear interpolation in z: ln(n) = (1-t)ln(n1) + t*ln(n2)
+    const t = (targetZ - z1) / (z2 - z1);
+    return Math.exp((1 - t) * Math.log(n1) + t * Math.log(n2));
+  }
+
   async function loadAllData() {
     let loadedCount = 0;
     
@@ -74,11 +102,6 @@ document.addEventListener("DOMContentLoaded", function() {
           const text = await response.text();
           cachedData[key] = parseEBLFile(text);
           loadedCount++;
-          if (commonRedshifts.length === 0 && cachedData[key].redshifts.length > 0) {
-            commonRedshifts = cachedData[key].redshifts;
-          }
-        } else {
-          console.error(`Failed to fetch ${modelFiles[key].url}: Status ${response.status}`);
         }
       } catch (err) {
         console.error(`Error loading ${key}:`, err);
@@ -92,24 +115,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
 
     statusEl.textContent = '';
-    populateRedshiftDropdown();
     updatePlot();
   }
 
-  function populateRedshiftDropdown() {
-    const select = document.getElementById('redshift-select');
-    select.innerHTML = '';
-    commonRedshifts.forEach((z, index) => {
-      const opt = document.createElement('option');
-      opt.value = index;
-      opt.textContent = `z = ${z}`;
-      select.appendChild(opt);
-    });
-  }
-
   function updatePlot() {
-    const zIndex = parseInt(document.getElementById('redshift-select').value) || 0;
-    const selectedRedshift = commonRedshifts[zIndex] ?? 0;
+    const selectedRedshift = parseFloat(slider.value);
     const checkboxes = document.querySelectorAll('.model-check:checked');
     
     const traces = [];
@@ -119,25 +129,26 @@ document.addEventListener("DOMContentLoaded", function() {
       const data = cachedData[key];
       if (!data) return;
 
-      const zIdx = data.redshifts.indexOf(selectedRedshift) !== -1
-        ? data.redshifts.indexOf(selectedRedshift)
-        : zIndex;
-
-      const yValues = data.densities.map(row => row[zIdx]);
+      // Compute n(ω, z) * ω² with log-interpolation at target z
+      const yValues = data.densities.map((row, i) => {
+        const energy = data.energies[i];
+        const interpolatedN = interpolateLogDensity(data.redshifts, row, selectedRedshift);
+        return interpolatedN * Math.pow(energy, 2);
+      });
 
       traces.push({
         x: data.energies,
         y: yValues,
         mode: 'lines',
         name: modelFiles[key].name,
-        hovertemplate: 'E: %{x:.4e} eV<br>n: %{y:.4e} eV²<extra></extra>'
+        hovertemplate: 'E: %{x:.4e} eV<br>n·ω²: %{y:.4e} eV⁴<extra></extra>'
       });
     });
 
     const layout = {
-      title: `EBL Photon Density Spectrum at z = ${selectedRedshift}`,
+      title: `EBL Energy Density Spectrum n(ω,z)·ω² at z = ${selectedRedshift.toFixed(2)}`,
       xaxis: { title: 'Photon Energy ω [eV]', type: 'log' },
-      yaxis: { title: 'Number Density n(ω, z) [eV²]', type: 'log' },
+      yaxis: { title: 'n(ω, z) · ω² [eV⁴]', type: 'log' },
       margin: { l: 65, r: 30, t: 40, b: 50 },
       hovermode: 'x unified'
     };
@@ -145,7 +156,13 @@ document.addEventListener("DOMContentLoaded", function() {
     Plotly.react('ebl-plot-container', traces, layout);
   }
 
-  document.getElementById('redshift-select').addEventListener('change', updatePlot);
+  // 2. Real-time number update while dragging
+  slider.addEventListener('input', function(e) {
+    valSpan.textContent = parseFloat(e.target.value).toFixed(2);
+  });
+
+  // 3. Re-render Plotly graph ONLY when user releases the slider handle
+  slider.addEventListener('change', updatePlot);
   document.querySelectorAll('.model-check').forEach(cb => cb.addEventListener('change', updatePlot));
 
   loadAllData();
